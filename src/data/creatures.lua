@@ -1,0 +1,91 @@
+-- Original creatures and techniques of the Aster archipelago.
+local D = {species = {}, moves = {}, starters = {'spriglet', 'cindercub', 'dripple'}}
+D.types = {'Leaf', 'Ember', 'Tide', 'Stone', 'Gale', 'Spark', 'Shade', 'Frost', 'Astral', 'Neutral'}
+D.typeColors = {
+  Leaf={0.39,0.79,0.48}, Ember={1,0.42,0.31}, Tide={0.26,0.77,0.88},
+  Stone={0.76,0.65,0.46}, Gale={0.62,0.86,0.77}, Spark={1,0.81,0.30},
+  Shade={0.64,0.49,0.80}, Frost={0.67,0.89,1}, Astral={0.89,0.63,1}, Neutral={0.81,0.78,0.72}
+}
+local function move(id,name,kind,element,power,accuracy,effect)
+  D.moves[id]={id=id,name=name,kind=kind,type=element,power=power or 0,accuracy=accuracy or 1,effect=effect}
+end
+move('nudge','Nudge','damage','Neutral',35)
+move('quickstep','Quickstep','damage','Neutral',42,1,'quick')
+move('headlong','Headlong','damage','Neutral',70,0.95,'recoil')
+move('shelter','Shelter','guard','Neutral')
+move('renew','Renew','heal','Leaf')
+move('leaflick','Leaf Flick','damage','Leaf',42)
+move('vinewhip','Briar Lash','damage','Leaf',60)
+move('bloomrush','Bloom Rush','damage','Leaf',80,0.95)
+move('rootdrink','Root Drink','damage','Leaf',48,1,'drain')
+move('ember','Ember','damage','Ember',43)
+move('flamepounce','Flame Pounce','damage','Ember',62)
+move('solarflare','Solar Flare','damage','Ember',86,0.92)
+move('cinderfang','Cinder Fang','damage','Ember',52)
+move('splashjet','Splash Jet','damage','Tide',43)
+move('tidalspin','Tidal Spin','damage','Tide',62)
+move('undertow','Undertow','damage','Tide',84,0.95)
+move('bubble','Bubble Arc','damage','Tide',38,1,'drain')
+move('pebble','Pebble Toss','damage','Stone',44)
+move('rockfall','Rockfall','damage','Stone',66,0.95)
+move('quake','Fault Line','damage','Stone',86,0.90)
+move('gust','Gust','damage','Gale',42)
+move('airslash','Air Slash','damage','Gale',62)
+move('cyclone','Cyclone','damage','Gale',84,0.95)
+move('spark','Spark','damage','Spark',44)
+move('arcbolt','Arc Bolt','damage','Spark',64)
+move('thunder','Storm Circuit','damage','Spark',87,0.92)
+move('shade','Shade Dart','damage','Shade',44)
+move('nightfall','Nightfall','damage','Shade',65)
+move('eclipse','Eclipse','damage','Shade',85,0.95)
+move('frostnip','Frost Nip','damage','Frost',44)
+move('icehorn','Ice Horn','damage','Frost',64)
+move('blizzard','White Horizon','damage','Frost',86,0.92)
+move('stardust','Stardust','damage','Astral',45)
+move('moonbeam','Moonbeam','damage','Astral',66)
+move('supernova','Supernova','damage','Astral',90,0.92)
+local function species(id,name,element,shape,hp,attack,defense,speed,description,learn,evolution,color)
+  D.species[id]={id=id,name=name,type=element,shape=shape,base={hp=hp,attack=attack,defense=defense,speed=speed},
+    color=color or D.typeColors[element],description=description,learnset=learn,evolution=evolution}
+end
+local function learn(a,b,c,d,e)
+  local t={{1,'nudge'},{1,a},{5,b or 'shelter'},{9,c or a},{15,d or b or a},{22,e or d or c or a}}
+  return t
+end
+species('spriglet','Spriglet','Leaf','deer',28,16,14,18,'A shy woodland companion. The tiny sprout between its ears opens whenever it trusts someone.',learn('leaflick','shelter','vinewhip','rootdrink','bloomrush'),{level=10,into='briarhart'})
+species('briarhart','Briarhart','Leaf','deer',40,22,21,24,'It weaves living briars into its antlers, sheltering lost travelers beneath a canopy of green.',learn('leaflick','shelter','vinewhip','rootdrink','bloomrush'),{level=20,into='verdantler'},{0.26,0.68,0.39})
+species('verdantler','Verdantler','Leaf','deer',56,31,30,31,'A guardian of ancient groves. Every fallen leaf beneath its steps becomes a new seed.',learn('vinewhip','renew','rootdrink','bloomrush','cyclone'),nil,{0.21,0.62,0.44})
+species('cindercub','Cindercub','Ember','cat',27,19,12,18,'Its warm fur smells faintly of cinnamon. A contented purr sends little embers into the air.',learn('ember','quickstep','flamepounce','cinderfang','solarflare'),{level=10,into='emberlynx'})
+species('emberlynx','Emberlynx','Ember','cat',39,27,18,26,'Its luminous ear tufts guide ships through coastal fog. It is fiercely loyal to its companions.',learn('ember','quickstep','flamepounce','cinderfang','solarflare'),{level=20,into='pyrolion'},{0.97,0.35,0.27})
+species('pyrolion','Pyrolion','Ember','cat',53,37,25,34,'An amber mane burns with a steady, comforting warmth. It never lets its friends face the dark alone.',learn('flamepounce','quickstep','cinderfang','solarflare','headlong'),nil,{1,0.52,0.24})
+species('dripple','Dripple','Tide','turtle',32,14,19,12,'It collects dew in the dimples of its shell and shares a sip with thirsty creatures.',learn('splashjet','shelter','tidalspin','bubble','undertow'),{level=10,into='tideling'})
+species('tideling','Tideling','Tide','turtle',46,20,28,17,'Tiny tide pools shimmer on its shell. It remembers the rhythm of every shore it has visited.',learn('splashjet','shelter','tidalspin','bubble','undertow'),{level=20,into='abysshell'},{0.19,0.66,0.81})
+species('abysshell','Abysshell','Tide','turtle',63,28,38,23,'A walking sanctuary for ocean life. Its shell carries the deep blue light of the open sea.',learn('tidalspin','shelter','bubble','undertow','icehorn'),nil,{0.20,0.54,0.76})
+species('mossmoth','Mossmoth','Leaf','bug',24,13,12,19,'It sleeps against mossy trunks, its wings disguised as a pair of fallen leaves.',learn('leaflick','gust','rootdrink','vinewhip'))
+species('pebbloon','Pebbloon','Stone','golem',33,14,23,7,'This round stone spirit hums softly when rain is coming. Pebbles gather around it like old friends.',learn('pebble','shelter','rockfall','quake'))
+species('flitfin','Flitfin','Tide','fish',23,15,11,24,'It leaps between tide pools on tiny translucent fins, leaving a trail of sparkling droplets.',learn('splashjet','quickstep','tidalspin','airslash'))
+species('sparkit','Sparkit','Spark','fox',26,18,12,23,'Static crackles in its oversized ears. It charges its tail by racing through dry grass.',learn('spark','quickstep','arcbolt','thunder'),{level=12,into='voltail'})
+species('voltail','Voltail','Spark','fox',43,29,21,36,'A bright ribbon of electricity dances from its tail. It can sense a storm a day before it arrives.',learn('spark','quickstep','arcbolt','thunder'),nil,{1,0.72,0.23})
+species('duskbat','Duskbat','Shade','bat',24,16,11,25,'At sunset, its little velvet wings carry the first echoes of the night across the island.',learn('shade','gust','nightfall','eclipse'),{level=14,into='nocturn'})
+species('nocturn','Nocturn','Shade','bat',43,28,21,39,'Its wings resemble a night sky with the stars missing. It navigates by listening to dreams.',learn('shade','airslash','nightfall','eclipse'),nil,{0.48,0.35,0.66})
+species('frostoat','Frostoat','Frost','deer',30,17,18,15,'Its frosted horns chime like tiny bells in the wind. It makes cool nests for overheated travelers.',learn('frostnip','shelter','icehorn','blizzard'),{level=16,into='rimehorn'})
+species('rimehorn','Rimehorn','Frost','deer',51,30,31,23,'Its crystalline antlers hold the memory of winter. Fresh snow sparkles wherever it rests.',learn('frostnip','shelter','icehorn','blizzard'),nil,{0.57,0.80,0.94})
+species('starling','Starling','Astral','bird',27,18,13,22,'A curious little bird with a star-shaped crest. It sings the same tune every time a comet passes.',learn('stardust','gust','moonbeam','supernova'),{level=18,into='astralune'})
+species('astralune','Astralune','Astral','bird',47,32,24,36,'Its crescent wings catch moonlight like silver sails. Navigators follow it across the darkest seas.',learn('stardust','airslash','moonbeam','supernova'),nil,{0.77,0.62,0.98})
+species('budpip','Budpip','Leaf','plant',25,12,15,13,'A cheerful seedling that bobs along woodland paths. Its flower opens when someone says hello.',learn('leaflick','renew','rootdrink','vinewhip'),nil,{0.64,0.80,0.36})
+species('thornowl','Thornowl','Leaf','bird',37,23,21,19,'Its feather-thorns protect the grove without harming a single tree. It blinks very, very slowly.',learn('leaflick','gust','vinewhip','airslash'),nil,{0.38,0.61,0.35})
+species('cragoon','Cragoon','Stone','golem',42,26,28,10,'A patient cliff dweller. The crystals on its back grow in the same colors as the nearby sunset.',learn('pebble','shelter','rockfall','quake'),nil,{0.71,0.49,0.37})
+species('monolisk','Monolisk','Stone','golem',57,30,38,9,'Old inscriptions drift across its stone body. It stands watch over paths that no longer exist.',learn('pebble','shelter','rockfall','quake'),nil,{0.60,0.59,0.66})
+species('gustwing','Gustwing','Gale','bird',28,16,13,27,'It surfs the updrafts above sea cliffs. Fisherfolk call its bright morning whistle a lucky sign.',learn('gust','quickstep','airslash','cyclone'))
+species('tempestrel','Tempestrel','Gale','bird',46,28,22,40,'A dancer in the heart of storms. It spreads its broad wings to shelter smaller birds from the rain.',learn('gust','quickstep','airslash','cyclone'),nil,{0.38,0.72,0.72})
+species('jellydrop','Jellydrop','Tide','blob',32,14,20,11,'A soft tide-pool drifter. It glows brighter when happy, like a lantern made of seawater.',learn('bubble','shelter','splashjet','undertow'),nil,{0.42,0.81,0.84})
+species('reefin','Reefin','Tide','fish',38,25,19,29,'Its coral fins pulse in time with the tides. Healthy reefs always have a Reefin nearby.',learn('splashjet','quickstep','tidalspin','undertow'),nil,{0.97,0.59,0.57})
+species('sootlet','Sootlet','Ember','fox',25,18,12,22,'A pocket-sized coal sprite with a fox-shaped silhouette. It loves curling up in empty teacups.',learn('ember','quickstep','cinderfang','solarflare'),nil,{0.75,0.41,0.34})
+species('lavadon','Lavadon','Ember','dragon',51,34,28,19,'It bathes in volcanic springs, then warms the coast with a long, contented breath.',learn('ember','pebble','flamepounce','solarflare'),nil,{0.89,0.33,0.26})
+species('glimmerbug','Glimmerbug','Spark','bug',22,14,13,19,'Its tiny antennae blink a friendly code. Watch a meadow at dusk and you may see them answering stars.',learn('spark','shelter','arcbolt','thunder'),{level=12,into='lumifly'},{0.90,0.83,0.35})
+species('lumifly','Lumifly','Spark','bug',38,26,21,31,'Its golden wings illuminate forgotten trails. The light grows stronger when it travels with friends.',learn('spark','gust','arcbolt','thunder'),nil,{1,0.83,0.41})
+species('lunacalf','Lunacalf','Neutral','deer',38,16,21,14,'It grazes under the moon, tracing slow circles through the grass. Its soft fur is woven into lullabies.',learn('nudge','shelter','headlong','moonbeam'),nil,{0.84,0.76,0.69})
+species('umbraclaw','Umbraclaw','Shade','cat',43,32,19,34,'A silent guardian of old ruins. It steals nothing except the fear from a lost traveler’s heart.',learn('shade','quickstep','nightfall','eclipse'),nil,{0.45,0.37,0.59})
+species('auroray','Auroray','Frost','fish',40,24,22,30,'It glides over frozen lakes on ribbons of cold light. The colors beneath its crystal fins predict tomorrow’s dawn.',learn('frostnip','gust','icehorn','blizzard'),nil,{0.57,0.85,0.95})
+species('aetherion','Aetherion','Astral','dragon',69,39,35,37,'The keeper of the Aster light. Legend says its first heartbeat scattered stars across the ocean.',learn('stardust','renew','moonbeam','supernova','cyclone'),nil,{0.77,0.69,1})
+return D

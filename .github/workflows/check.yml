@@ -1,0 +1,29 @@
+name: Check and package PokéLua
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lua and LÖVE
+        run: sudo apt-get update && sudo apt-get install -y lua5.1 love xvfb xauth zip
+      - name: Test game rules and campaign
+        run: lua5.1 tests/run.lua
+      - name: Render and exercise the game
+        run: |
+          mkdir -p dist/screenshots
+          ALSOFT_DRIVERS=null LIBGL_ALWAYS_SOFTWARE=1 timeout 60s xvfb-run -a love . --smoke
+      - name: Package the playable archive
+        run: lua5.1 scripts/package.lua
+      - name: Verify the packaged game
+        run: ALSOFT_DRIVERS=null LIBGL_ALWAYS_SOFTWARE=1 timeout 30s xvfb-run -a love dist/PokeLua.love --verify
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PokeLua-desktop
+          path: |
+            dist/PokeLua.love
+            dist/screenshots/*.png
